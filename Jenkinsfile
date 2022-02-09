@@ -43,12 +43,18 @@ spec:
     - sleep
     args:
     - 99d
+    volumeMounts:
+      - name: docker-config
+        mountPath: /kaniko/.docker
   volumes:
     - name: docker-config
-      hostPath:
-        path: /var/run/docker.sock
-        type: ""
-
+      projected:
+        sources:
+        - secret:
+            name: harbor
+            items:
+              - key: .dockerconfigjson
+                path: config.json
 """
 }
    }
