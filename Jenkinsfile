@@ -16,6 +16,7 @@ pipeline {
   agent {
     kubernetes {
       label "spring-petclinic-${myid}"
+      defaultContainer 'jnlp'
       instanceCap 1
       yaml """
 apiVersion: v1
