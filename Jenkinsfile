@@ -39,9 +39,6 @@ spec:
     - sleep
     args:
     - 99d
-    volumeMounts:
-    - name: docker-config
-      mountPath: /kaniko/.docker
   volumes:
     - name: docker-config
       hostPath:
