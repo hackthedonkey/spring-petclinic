@@ -8,7 +8,7 @@ pipeline {
   environment {
     APP_VER = "v1.0.${BUILD_ID}"
     // HARBOR_URL = ""
-    DEPLOY_GITREPO_USER = "your_name"    
+    DEPLOY_GITREPO_USER = "hackthedonkey"    
     DEPLOY_GITREPO_URL = "github.com/${DEPLOY_GITREPO_USER}/spring-petclinic-helmchart.git"
     DEPLOY_GITREPO_BRANCH = "main"
     DEPLOY_GITREPO_TOKEN = credentials('my-github')
@@ -32,13 +32,36 @@ spec:
     command:
     - cat
     tty: true
+    volumeMounts:
+    - mountPath: "/root/.m2"
+      name: m2
   - name: kaniko
     image: gcr.io/kaniko-project/executor:v1.6.0-debug
     imagePullPolicy: Always
     command:
     - sleep
     args:
-    - 99d    
+    - 99d
+    volumeMounts:
+    - mountPath: "/root/.m2"
+      name: m2      
+    - name: docker-config
+      mountPath: /kaniko/.docker
+    - name: ca-cert
+      mountPath: /kaniko/ssl/certs/
+  volumes:
+    - name: ca-cert
+      secret:
+        secretName: ca-bundle
+        items:
+        - key: additional-ca-cert-bundle.crt
+          path: additional-ca-cert-bundle.crt
+    - name: docker-config
+      configMap:
+        name: docker-config
+    - name: m2
+      persistentVolumeClaim:
+        claimName: m2
 """
 }
    }
