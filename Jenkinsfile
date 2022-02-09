@@ -55,7 +55,7 @@ spec:
     - name: m2
       hostPath:
         path: /root/.m2
-        type: Directory
+        type: ""
 """
 }
    }
