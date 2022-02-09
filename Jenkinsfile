@@ -13,75 +13,30 @@ pipeline {
     DEPLOY_GITREPO_BRANCH = "main"
     DEPLOY_GITREPO_TOKEN = credentials('my-github')
   }    
-  agent {
-    kubernetes {
-      inheritFrom  "spring-petclinic-${myid}"
-      instanceCap 1
-      defaultContainer 'jnlp'
-      yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  namespace: jenkins-workers
-spec:
-  # Use service account that can deploy to all namespaces
-  serviceAccountName: default
-  containers:
-  - name: maven
-    image: maven:3.8.1-openjdk-16
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - mountPath: "/root/.m2"
-      name: m2
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:v1.6.0-debug
-    imagePullPolicy: Always
-    command:
-    - sleep
-    args:
-    - 99d
-    volumeMounts:
-    - mountPath: "/root/.m2"
-      name: m2      
-    - name: docker-config
-      mountPath: /kaniko/.docker
-    - name: ca-cert
-      mountPath: /kaniko/ssl/certs/
-  volumes:
-    - name: ca-cert
-      secret:
-        secretName: ca-bundle
-        items:
-        - key: additional-ca-cert-bundle.crt
-          path: additional-ca-cert-bundle.crt
-    - name: docker-config
-      configMap:
-        name: docker-config
-    - name: m2
-      persistentVolumeClaim:
-        claimName: m2
-"""
-}
-   }
+  agent none
   stages {
     stage('Build') {
+      agent {
+        docker {
+          image 'maven:3.8.1-openjdk-16'
+        }
+      }
       steps {
-        container('maven') {
           echo sh(script: 'env|sort', returnStdout: true)
           sh """
             mvn -B -ntp -T 2 package -DskipTests -DAPP_VERSION=${APP_VER}
-            """
-        }
+            """  
       }
     }
     stage('Containerize') {
-      steps {
-        container('kaniko') {
-          sh "sed -i 's,harbor.example.com,${env.HARBOR_URL},g' Dockerfile"
-          sh "/kaniko/executor --dockerfile Dockerfile --context `pwd` --skip-tls-verify --destination=${env.HARBOR_URL}/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}"
+      agent {
+        docker {
+          image 'gcr.io/kaniko-project/executor:v1.6.0-debug'
         }
+      }
+      steps {
+          sh "sed -i 's,harbor.example.com,${env.HARBOR_URL},g' Dockerfile"
+          sh "/kaniko/executor --dockerfile Dockerfile --context `pwd` --skip-tls-verify --destination=${env.HARBOR_URL}/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}"      
       }
     }
     stage('Approval') {
@@ -94,8 +49,12 @@ spec:
       }
     }    
     stage('GitOps-based Deploy') {
+      agent {
+        docker {
+          image 'maven:3.8.1-openjdk-16'
+        }
+      }
       steps {
-        container('maven') {
           sh """
             git config --global user.name $env.GIT_AUTHOR_NAME
             git config --global user.email $env.GIT_AUTHOR_EMAIL
@@ -109,8 +68,7 @@ spec:
             git commit -am 'bump up version number'
             git remote set-url origin https://$env.DEPLOY_GITREPO_USER:$env.DEPLOY_GITREPO_TOKEN@$env.DEPLOY_GITREPO_URL
             git push origin main
-          """
-        }
+          """        
       }
     }   
   }
