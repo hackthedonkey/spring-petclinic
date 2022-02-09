@@ -46,6 +46,7 @@ spec:
     - name: docker-config
       hostPath:
         path: /var/run/docker.sock
+        type: ""
 
 """
 }
