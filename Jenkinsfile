@@ -48,14 +48,18 @@ spec:
     - name: docker-config
       mountPath: /kaniko/.docker
   volumes:
+    - name: ca-cert
+      secret:
+        secretName: ca-bundle
+        items:
+        - key: additional-ca-cert-bundle.crt
+          path: additional-ca-cert-bundle.crt
     - name: docker-config
-      hostPath:
-        path: /var/run/docker.sock
-        type: ""
+      configMap:
+        name: docker-config
     - name: m2
-      hostPath:
-        path: /root/.m2
-        type: ""
+      persistentVolumeClaim:
+        claimName: m2
 """
 }
    }
