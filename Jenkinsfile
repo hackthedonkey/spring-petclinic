@@ -13,69 +13,26 @@ pipeline {
     DEPLOY_GITREPO_BRANCH = "main"
     DEPLOY_GITREPO_TOKEN = credentials('my-github')
   }
-  agent {
-    kubernetes {
-      label "spring-petclinic-${myid}"
-      defaultContainer 'jnlp'
-      instanceCap 1
-      yaml """
-apiVersion: v1
-kind: Pod
-metadata:
-  namespace: jenkins-workers
-spec:
-  # Use service account that can deploy to all namespaces
-  serviceAccountName: default
-  hostAliases:
-  - ip: "192.168.10.30"
-    hostnames:
-    - "harbor.lazydonkey.co.kr"
-  containers:
-  - name: maven
-    image: maven:3.8.1-openjdk-16
-    command:
-    - cat
-    tty: true
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:v1.6.0-debug
-    imagePullPolicy: Always
-    command:
-    - sleep
-    args:
-    - 99d
-    volumeMounts:
-      - name: docker-config
-        mountPath: /kaniko/.docker
-  volumes:
-    - name: docker-config
-      projected:
-        sources:
-        - secret:
-            name: harbor
-            items:
-              - key: .dockerconfigjson
-                path: config.json
-"""
-}
-   }
+  agent any
   stages {
+      stage('Cloning Git') {
+      steps {
+        git 'https://github.com/hackthedonkey/spring-petclinic.git'
+      }
+    }
     stage('Build') {
       steps {
-        container('maven') {
           echo sh(script: 'env|sort', returnStdout: true)
           sh """
             mvn -B -ntp -T 2 package -DskipTests -DAPP_VERSION=${APP_VER}
             """
         }
-      }
     }
-    stage('Containerize') {
+    stage('Building Image') {
       steps {
-        container('kaniko') {
           sh "sed -i 's,harbor.example.com,${env.HARBOR_URL},g' Dockerfile"
-          sh "/kaniko/executor --dockerfile Dockerfile --context `pwd` --insecure --skip-tls-verify --destination=${env.HARBOR_URL}/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}"
+          docker build -t ${env.HARBOR_URL}/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}" .
         }
-      }
     }
     stage('Approval') {
       input {
@@ -88,7 +45,6 @@ spec:
     }
     stage('GitOps-based Deploy') {
       steps {
-        container('maven') {
           sh """
             git config --global user.name $env.GIT_AUTHOR_NAME
             git config --global user.email $env.GIT_AUTHOR_EMAIL
@@ -103,7 +59,6 @@ spec:
             git remote set-url origin https://$env.DEPLOY_GITREPO_USER:$env.DEPLOY_GITREPO_TOKEN@$env.DEPLOY_GITREPO_URL
             git push origin main
           """
-        }
       }
     }
   }
