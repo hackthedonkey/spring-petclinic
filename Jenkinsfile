@@ -27,19 +27,24 @@ pipeline {
      }
     }
     stage('Building Image') {
-      steps{
-        script {
-          dockerImage = docker.build registry + ":v1.0.${env.BUILD_ID}"
-        }
+      steps{    
+          sh """
+            docker build -t harbor.lazydonkey.co.kr/library/samples/spring-petclinic:v1.0.${env.BUILD_ID} .
+            """    
+      }
+    }
+    stage('Docker Login') {
+      steps{            
+          sh """
+            docker login harbor.lazydonkey.co.kr -u admin -p Harbor12345
+            """
       }
     }
     stage('Deploy Image') {
-      steps{
-         script {
-            docker.withRegistry( '', registryCredential ) {
-            dockerImage.push()
-          }
-        }
+      steps{            
+          sh """
+            docker push harbor.lazydonkey.co.kr/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}
+            """
       }
     }
     stage('Approval') {
