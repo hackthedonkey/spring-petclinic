@@ -47,6 +47,11 @@ pipeline {
             """
       }
     }
+    stage('Scan image') {
+      steps {
+        neuvector registrySelection: 'Local', repository: 'harbor.lazydonkey.co.kr/library/samples/spring-petclinic', tag: 'v1.0.${env.BUILD_ID}'
+      }
+    }
     stage('Approval') {
       input {
         message "Proceed to deploy?"
