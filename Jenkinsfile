@@ -19,7 +19,7 @@ pipeline {
       steps {
           echo sh(script: 'env|sort', returnStdout: true)
           sh """
-            mvn -B -ntp -T 2 package -DskipTests -DAPP_VERSION=${APP_VER}
+            mvn -B -T 2 package -DskipTests -DAPP_VERSION=${APP_VER}
             """
      }
     }
