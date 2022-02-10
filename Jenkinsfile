@@ -36,7 +36,7 @@ spec:
     image: gcr.io/kaniko-project/executor:v1.6.0-debug
     imagePullPolicy: Always
     hostAliases:
-    - ip: "192.168.10.100"
+    - ip: "192.168.10.30"
       hostnames:
       - "harbor.lazydonkey.co.kr"
     command:
