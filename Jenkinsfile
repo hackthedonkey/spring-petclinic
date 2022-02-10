@@ -30,8 +30,7 @@ pipeline {
     }
     stage('Building Image') {
       steps {
-          sh "sed -i 's,harbor.example.com,${env.HARBOR_URL},g' Dockerfile"
-          docker build -t ${env.HARBOR_URL}/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}" .
+          docker build -t hackthedonkey/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}" .
         }
     }
     stage('Approval') {
@@ -52,7 +51,7 @@ pipeline {
             # After cloning
             cd deploy
             # update values.yaml
-            sed -i -r 's,repository: (.+),repository: ${env.HARBOR_URL}/library/samples/spring-petclinic,' values.yaml
+            sed -i -r 's,repository: (.+),repository: hackthedonkey/library/samples/spring-petclinic,' values.yaml
             sed -i 's/tag: v1.0.*/tag: v1.0.${env.BUILD_ID}/' values.yaml
             cat values.yaml
             git commit -am 'bump up version number'
