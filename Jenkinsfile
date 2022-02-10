@@ -12,9 +12,6 @@ pipeline {
     DEPLOY_GITREPO_URL = "github.com/${DEPLOY_GITREPO_USER}/spring-petclinic-helmchart.git"
     DEPLOY_GITREPO_BRANCH = "main"
     DEPLOY_GITREPO_TOKEN = credentials('my-github')
-    registry = "hackthedonkey/library/samples/spring-petclinic"
-    registryCredential = 'harbor'
-    dockerImage = ''
   }
   agent any
   stages {
@@ -29,27 +26,27 @@ pipeline {
     stage('Building Image') {
       steps{    
           sh """
-            docker build -t harbor.lazydonkey.co.kr/library/samples/spring-petclinic:v1.0.${env.BUILD_ID} .
+            docker build -t hackthedonkey/spring-petclinic:v1.0.${env.BUILD_ID} .
             """    
       }
     }
     stage('Docker Login') {
       steps{            
           sh """
-            docker login harbor.lazydonkey.co.kr -u admin -p Harbor12345
+            docker login -u hackthedonkey -p Mgwoo2002!
             """
       }
     }
     stage('Deploy Image') {
       steps{            
           sh """
-            docker push harbor.lazydonkey.co.kr/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}
+            docker push hackthedonkey/spring-petclinic:v1.0.${env.BUILD_ID}
             """
       }
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'harbor', repository: 'library/samples/spring-petclinic', tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'docker-hub', repository: 'spring-petclinic', tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Approval') {
