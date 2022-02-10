@@ -46,7 +46,7 @@ pipeline {
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'docker-hub', repository: 'spring-petclinic', tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'docker-hub', repository: 'hackthedonkey/spring-petclinic', tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Approval') {
