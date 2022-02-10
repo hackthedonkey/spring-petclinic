@@ -19,7 +19,7 @@ RUN mvn package -DAPP_VERSION=v1.0 -DskipTests
 
 
 ## Stage 2/2 - Containerize the standalone JAR application
-FROM sles15sp3-openjdk:11.0-3.56.1 as runtime
+FROM susesamples/sles15sp3-openjdk:11.0-3.56.1 as runtime
 EXPOSE 8080
 
 ENV APP_HOME /app
