@@ -30,11 +30,6 @@ pipeline {
             """    
       }
     }
-    stage('Scan image Before') {
-      steps {
-        neuvector registrySelection: 'Local', repository: 'hackthedonkey'
-      }
-    }
     stage('Docker Login') {
       steps{            
           sh """
