@@ -26,12 +26,12 @@ pipeline {
           sh """
             mvn -B -ntp -T 2 package -DskipTests -DAPP_VERSION=${APP_VER}
             """
-        }
+     }
     }
     stage('Building Image') {
       steps {
           docker.build  hackthedonkey/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}" 
-        }
+      }
     }
     stage('Approval') {
       input {
