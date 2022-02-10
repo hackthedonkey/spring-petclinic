@@ -30,7 +30,7 @@ pipeline {
             """    
       }
     }
-    stage('Scan image') {
+    stage('Scan image Before') {
       steps {
         neuvector registrySelection: 'Local', repository: 'hackthedonkey/spring-petclinic', tag: 'v1.0.$BUILD_ID'
       }
