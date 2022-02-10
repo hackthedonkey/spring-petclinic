@@ -15,11 +15,6 @@ pipeline {
   }
   agent any
   stages {
-      stage('Cloning Git') {
-      steps {
-        git 'https://github.com/hackthedonkey/spring-petclinic.git'
-      }
-    }
     stage('Build') {
       steps {
           echo sh(script: 'env|sort', returnStdout: true)
