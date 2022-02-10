@@ -25,7 +25,14 @@ pipeline {
     }
     stage('Building Image') {
       steps {
-          sh "docker build -t hackthedonkey/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}" 
+          app = docker.build("hackthedonkey/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}")
+      }
+    }
+    stage('Push Image') {
+      steps {
+         docker.withRegistry('https://harbor.lazydonkey.co.kr', 'harbor') {
+            app.push()
+        }
       }
     }
     stage('Approval') {
