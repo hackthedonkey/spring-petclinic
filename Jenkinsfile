@@ -30,7 +30,7 @@ pipeline {
     }
     stage('Building Image') {
       steps {
-          docker build -t hackthedonkey/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}" .
+          docker.build  hackthedonkey/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}" 
         }
     }
     stage('Approval') {
