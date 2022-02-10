@@ -32,7 +32,7 @@ pipeline {
     }
     stage('Scan Local image') {
       steps {
-        neuvector registrySelection: 'Local', repository: 'hackthedonkey/spring-petclinic', tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'Local', repository: 'hackthedonkey/spring-petclinic', scanLayers: true, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Docker Login') {
@@ -51,7 +51,7 @@ pipeline {
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'docker-hub', repository: 'hackthedonkey/spring-petclinic', tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'docker-hub', repository: 'hackthedonkey/spring-petclinic', scanLayers: true, tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Approval') {
