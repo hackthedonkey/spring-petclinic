@@ -12,6 +12,7 @@ pipeline {
     DEPLOY_GITREPO_URL = "github.com/${DEPLOY_GITREPO_USER}/spring-petclinic-helmchart.git"
     DEPLOY_GITREPO_BRANCH = "main"
     DEPLOY_GITREPO_TOKEN = credentials('my-github')
+    app = ''
   }
   agent any
   stages {
@@ -24,12 +25,16 @@ pipeline {
      }
     }
     stage('Building Image') {
+       steps {
           app = docker.build("hackthedonkey/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}")
+       }
     }
     stage('Push Image') {
+       steps {
          docker.withRegistry('https://harbor.lazydonkey.co.kr', 'harbor') {
             app.push()
-        }
+         }
+       }
     }
     stage('Approval') {
       input {
