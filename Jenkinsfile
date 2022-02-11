@@ -26,32 +26,32 @@ pipeline {
     stage('Building Image') {
       steps{    
           sh """
-            docker build -t hackthedonkey/spring-petclinic:v1.0.${env.BUILD_ID} .
+            docker build -t harbor.lazydonkey.co.kr/spring-petclinic:v1.0.${env.BUILD_ID} .
             """    
       }
     }
     stage('Scan Local image') {
       steps {
-        neuvector registrySelection: 'Local', repository: 'hackthedonkey/spring-petclinic', scanLayers: true, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'Local', repository: 'harbor.lazydonkey.co.kr/spring-petclinic', scanLayers: true, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Docker Login') {
       steps{            
           sh """
-            docker login -u hackthedonkey -p Mgwoo2002!
+            docker login harbor.lazydonkey.co.kr -u admin -p Harbor12345
             """
       }
     }
     stage('Deploy Image') {
       steps{            
           sh """
-            docker push hackthedonkey/spring-petclinic:v1.0.${env.BUILD_ID}
+            docker push harbor.lazydonkey.co.kr/spring-petclinic:v1.0.${env.BUILD_ID}
             """
       }
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'docker-hub', repository: 'hackthedonkey/spring-petclinic', scanLayers: true, tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'harbor', repository: 'spring-petclinic', scanLayers: true, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Approval') {
