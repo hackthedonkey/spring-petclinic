@@ -38,7 +38,7 @@ pipeline {
     stage('Docker Login') {
       steps{            
           sh """
-            docker login -u hackthedonkey -p Mgwoo2002!
+            docker login harbor.lazydonkey.co.rk -u admin -p Harbor12345
             """
       }
     }
@@ -51,7 +51,7 @@ pipeline {
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'harbor', repository: 'harbor.lazydonkey.co.kr/library/samples/spring-petclinic', scanLayers: true, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'harbor', repository: 'library/samples/spring-petclinic', scanLayers: true, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Approval') {
