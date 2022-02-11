@@ -38,7 +38,7 @@ pipeline {
     stage('Docker Login') {
       steps{            
           sh """
-            docker login harbor.lazydonkey.co.rk -u admin -p Harbor12345
+            docker login harbor.lazydonkey.co.kr -u admin -p Harbor12345
             """
       }
     }
