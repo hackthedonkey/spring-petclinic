@@ -51,7 +51,7 @@ pipeline {
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'harbor', repository: 'harbor.lazydonkey.co.kr/test/bamboo-agent', scanLayers: true, tag: 'gradle'
+        neuvector registrySelection: 'harbor', repository: 'test/bamboo-agent', scanLayers: true, tag: 'gradle'
       }
     }
     stage('Approval') {
