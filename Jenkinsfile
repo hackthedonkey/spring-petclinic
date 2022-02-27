@@ -51,7 +51,7 @@ pipeline {
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'harbor', repository: 'test/bamboo-agent', scanLayers: true, tag: 'gradle'
+        neuvector registrySelection: 'harbor', repository: 'neuvector/spring-petclinic', scanLayers: true, tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Approval') {
