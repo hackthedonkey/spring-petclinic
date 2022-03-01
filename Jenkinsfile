@@ -51,7 +51,7 @@ pipeline {
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'harbor', repository: 'test/docker-test', scanLayers: true, tag: 'v1.0'
+        neuvector registrySelection: 'harbor', repository: 'test/docker-test', scanLayers: true, tag: 'v1'
       }
     }
     stage('Approval') {
