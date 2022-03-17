@@ -11,7 +11,7 @@ pipeline {
     DEPLOY_GITREPO_USER = "hackthedonkey"
     DEPLOY_GITREPO_URL = "github.com/${DEPLOY_GITREPO_USER}/spring-petclinic-helmchart.git"
     DEPLOY_GITREPO_BRANCH = "main"
-    DEPLOY_GITREPO_TOKEN = credentials('github')
+    DEPLOY_GITREPO_TOKEN = credentials('my-github')
   }
   agent any
   stages {
@@ -38,7 +38,7 @@ pipeline {
     stage('Docker Login') {
       steps{            
           sh """
-            docker login harbor.lazydonkey.co.kr -u admin -p Root12345
+            docker login harbor.lazydonkey.co.kr -u admin -p Harbor12345
             """
       }
     }
