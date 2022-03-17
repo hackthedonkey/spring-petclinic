@@ -32,7 +32,7 @@ pipeline {
     }
     stage('Scan Local image') {
       steps {
-        neuvector registrySelection: 'Local', repository: 'harbor.lazydonkey.co.kr/neuvector/spring-petclinic', scanLayers: true, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
+        neuvector registrySelection: 'Local', repository: 'harbor.lazydonkey.co.kr/neuvector/spring-petclinic', scanLayers: false, standaloneScanner: true, tag: 'v1.0.$BUILD_ID'
       }
     }
     stage('Docker Login') {
@@ -51,7 +51,7 @@ pipeline {
     }
     stage('Scan image') {
       steps {
-        neuvector registrySelection: 'harbor', repository: 'test/docker-test', scanLayers: true, tag: 'v1'
+        neuvector registrySelection: 'harbor', repository: 'test/docker-test', scanLayers: false, tag: 'v1'
       }
     }
     stage('Approval') {
